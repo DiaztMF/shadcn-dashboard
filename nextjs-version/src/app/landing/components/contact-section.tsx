@@ -17,6 +17,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Mail, MessageCircle, Github, BookOpen } from 'lucide-react'
+import { createInquiryAction } from '@/actions/inquiry'
+import { toast } from "sonner"
 
 const contactFormSchema = z.object({
   firstName: z.string().min(2, {
@@ -48,11 +50,23 @@ export function ContactSection() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof contactFormSchema>) {
-    // Here you would typically send the form data to your backend
-    console.log(values)
-    // You could also show a success message or redirect
-    form.reset()
+  async function onSubmit(values: z.infer<typeof contactFormSchema>) {
+    try {
+      const res = await createInquiryAction({
+        name: `${values.firstName} ${values.lastName}`.trim(),
+        email: values.email,
+        message: `[Subject: ${values.subject}] ${values.message}`,
+      })
+
+      if (res.success) {
+        toast.success("Message sent successfully! We will get back to you soon.")
+        form.reset()
+      } else {
+        toast.error("Failed to send message. Please try again.")
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.")
+    }
   }
 
   return (

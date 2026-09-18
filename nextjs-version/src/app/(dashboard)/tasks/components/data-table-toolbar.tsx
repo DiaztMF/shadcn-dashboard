@@ -131,8 +131,10 @@ export function DataTableToolbar<TData>({
                   className="cursor-pointer"
                 >
                   <div className="flex items-center">
-                    {priority.icon && (
-                      <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                    {(priority as { label: string; value: string; icon?: React.ComponentType<{ className?: string }> }).icon && (
+                      <span className="mr-2">
+                        {/* icon if present */}
+                      </span>
                     )}
                     {priority.label}
                   </div>

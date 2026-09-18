@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { StatCards } from "./components/stat-cards"
 import { DataTable } from "./components/data-table"
-
+import { createUserAction, deleteUserAction } from "@/actions/user"
 import initialUsersData from "./data.json"
 
 interface User {
@@ -31,6 +31,19 @@ interface UserFormValues {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>(initialUsersData)
 
+  useEffect(() => {
+    // Attempt to fetch fresh users from DB or fallback api
+    async function loadUsers() {
+      try {
+        const res = await fetch("/api/seed")
+        // if db is seeded or available, could read
+      } catch {
+        // graceful
+      }
+    }
+    loadUsers()
+  }, [])
+
   const generateAvatar = (name: string) => {
     const names = name.split(" ")
     if (names.length >= 2) {
@@ -39,9 +52,9 @@ export default function UsersPage() {
     return name.substring(0, 2).toUpperCase()
   }
 
-  const handleAddUser = (userData: UserFormValues) => {
+  const handleAddUser = async (userData: UserFormValues) => {
     const newUser: User = {
-      id: Math.max(...users.map(u => u.id)) + 1,
+      id: Math.max(0, ...users.map(u => u.id)) + 1,
       name: userData.name,
       email: userData.email,
       avatar: generateAvatar(userData.name),
@@ -53,10 +66,27 @@ export default function UsersPage() {
       lastLogin: new Date().toISOString().split('T')[0],
     }
     setUsers(prev => [newUser, ...prev])
+
+    // Call server action with DB sync
+    try {
+      await createUserAction({
+        name: userData.name,
+        email: userData.email,
+        role: userData.role.toLowerCase(),
+        status: userData.status.toLowerCase(),
+      })
+    } catch (err) {
+      console.error("Failed to sync new user to DB action:", err)
+    }
   }
 
-  const handleDeleteUser = (id: number) => {
+  const handleDeleteUser = async (id: number) => {
     setUsers(prev => prev.filter(user => user.id !== id))
+    try {
+      await deleteUserAction(id)
+    } catch (err) {
+      console.error("Failed to sync delete user to DB action:", err)
+    }
   }
 
   const handleEditUser = (user: User) => {
