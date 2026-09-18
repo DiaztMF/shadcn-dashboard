@@ -15,8 +15,8 @@ Clone the repository and install dependencies in your chosen version:
 
 ```bash
 # Clone the monorepo
-git clone https://github.com/DiaztMF/shadcn-dashboard-landing-template.git
-cd shadcn-dashboard-landing-template
+git clone https://github.com/DiaztMF/shadcn-dashboard.git
+cd shadcn-dashboard
 
 # For Next.js App Router version
 cd nextjs-version
@@ -83,7 +83,7 @@ export function ModeToggle() {
 ## Architecture & Development Guides
 
 ```
-shadcn-dashboard-landing-template/
+shadcn-dashboard/
 ├── nextjs-version/          # Full Next.js 16 App Router implementation
 │   ├── app/                 # Routes, pages, and dashboard layout
 │   ├── components/          # shadcn/ui primitives and custom blocks
